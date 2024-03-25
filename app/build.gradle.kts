@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -60,6 +61,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.messaging)
+    implementation(libs.androidx.datastore.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,4 +73,6 @@ dependencies {
 //    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.coil.compose)
+    implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-messaging-ktx")
 }

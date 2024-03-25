@@ -24,7 +24,7 @@ class NewsViewModel : ViewModel() {
 
     @SuppressLint("SimpleDateFormat")
     fun sortList(index :Int){
-        val parser =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        val parser =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
         if(index==0) {
             news.sortedBy { it -> it.publishedAt?.let { it1 -> parser.parse(it1)?.let { formatter.format(it) } } }
