@@ -1,5 +1,6 @@
 package com.example.newsapp.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,6 +20,8 @@ class NewsViewModel : ViewModel() {
     @OptIn(ExperimentalSerializationApi::class)
     fun getNews(){
         viewModelScope.launch {
+
+            var data : String
             try {
                 val apiService = RemoteApi()
                 apiService.getNews()
