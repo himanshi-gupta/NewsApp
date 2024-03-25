@@ -1,9 +1,11 @@
 package com.example.newsapp.viewmodels
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.newsapp.RemoteApi
 import com.example.newsapp.models.Articles
@@ -13,10 +15,24 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 
+@SuppressLint("MutableCollectionMutableState")
 class NewsViewModel : ViewModel() {
-    var news : List<Articles> by mutableStateOf(listOf())
+    var news : MutableList<Articles> by mutableStateOf(mutableListOf())
 
+    @SuppressLint("SimpleDateFormat")
+    fun sortList(index :Int){
+        val parser =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
+        if(index==0) {
+            news.sortedBy { it -> it.publishedAt?.let { it1 -> parser.parse(it1)?.let { formatter.format(it) } } }
+        }
+        else {
+            news.sortedByDescending { it -> it.publishedAt?.let { it1 -> parser.parse(it1)?.let { formatter.format(it) } } }
+        }
+    }
     @OptIn(ExperimentalSerializationApi::class)
     fun getNews(){
         viewModelScope.launch {
@@ -25,7 +41,7 @@ class NewsViewModel : ViewModel() {
             try {
                 val apiService = RemoteApi()
                 apiService.getNews()
-                news = Json.decodeFromString<News>(apiService.data?:"").articles
+                news = Json.decodeFromString<News>(apiService.data?:"").articles.toMutableList()
             }
             catch (ex: Exception){
                 throw Exception(ex.message)
