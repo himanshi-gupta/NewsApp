@@ -65,6 +65,8 @@ import com.example.newsapp.models.Articles
 import com.example.newsapp.ui.theme.NewsAppTheme
 import com.example.newsapp.viewmodels.NewsViewModel
 import coil.compose.AsyncImage
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,10 +83,28 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     newsVM.getNews()
-                    LandingPage(newsVM.news) { newsVM.sortList(it) }
+                    LandingPage(newsVM.news, { getToken() }) { newsVM.sortList(it) }
+//                    getToken()
+
                 }
             }
         }
+    }
+
+    private fun getToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.d("Himanshi", "Fetching FCM registration token failed ${task.exception}")
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+//            val msg = getString(R.string.msg_token_fmt, token)
+            Log.d("Himanshi", token)
+        })
     }
 }
 
@@ -92,7 +112,7 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingPage(newsList: MutableList<Articles>, sortList : (Int) -> Unit) {
+fun LandingPage(newsList: MutableList<Articles>, getToken : () -> Unit, sortList : (Int) -> Unit) {
 
     Scaffold(
         topBar = {
@@ -124,6 +144,7 @@ fun LandingPage(newsList: MutableList<Articles>, sortList : (Int) -> Unit) {
         content = { ListView(newsList) },
         bottomBar = {}
     )
+    getToken()
 }
 
 @Composable
