@@ -75,4 +75,5 @@ dependencies {
     implementation (libs.coil.compose)
     implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-firestore")
 }

@@ -149,7 +149,7 @@ fun LandingPage(newsList: MutableList<Articles>, context : Context, getToken : (
         content = { ListView(newsList,context) },
         bottomBar = {}
     )
-    getToken();
+//    getToken();
 }
 
 @Composable
