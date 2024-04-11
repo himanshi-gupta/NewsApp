@@ -1,6 +1,8 @@
 package com.example.newsapp
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -51,25 +53,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.newsapp.models.Articles
-import com.example.newsapp.ui.theme.NewsAppTheme
 import com.example.newsapp.viewmodels.NewsViewModel
 import coil.compose.AsyncImage
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.newsapp.ui.theme.NewsAppTheme
 
 class MainActivity : ComponentActivity() {
     val newsVM by viewModels<NewsViewModel>()
@@ -83,8 +80,19 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     newsVM.getNews()
-                    LandingPage(newsVM.news, { getToken() }) { newsVM.sortList(it) }
-//                    getToken()
+                    if(intent.extras!=null){
+                        val image = intent.getStringExtra("image")
+                        val title = intent.getStringExtra("title")
+                        val descriptn = intent.getStringExtra("desc")
+                        val url = intent.getStringExtra("url")
+                        startActivity(Intent(applicationContext,NewsDetail::class.java)
+                            .putExtra("image",image)
+                            .putExtra("title",title)
+                            .putExtra("desc",descriptn)
+                            .putExtra("url",url))
+                    }
+                    else
+                        LandingPage(newsVM.news, applicationContext,{ getToken() }) { newsVM.sortList(it) }
 
                 }
             }
@@ -101,9 +109,6 @@ class MainActivity : ComponentActivity() {
             // Get new FCM registration token
             val token = task.result
 
-            // Log and toast
-//            val msg = getString(R.string.msg_token_fmt, token)
-            Log.d("Himanshi", token)
         })
     }
 }
@@ -112,7 +117,7 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingPage(newsList: MutableList<Articles>, getToken : () -> Unit, sortList : (Int) -> Unit) {
+fun LandingPage(newsList: MutableList<Articles>, context : Context, getToken : () -> Unit, sortList : (Int) -> Unit) {
 
     Scaffold(
         topBar = {
@@ -141,27 +146,35 @@ fun LandingPage(newsList: MutableList<Articles>, getToken : () -> Unit, sortList
                     .clip(shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp)),
             )
         },
-        content = { ListView(newsList) },
+        content = { ListView(newsList,context) },
         bottomBar = {}
     )
-    getToken()
+    getToken();
 }
 
 @Composable
-fun ListView(newsList: MutableList<Articles>, modifier: Modifier = Modifier) {
+fun ListView(newsList: MutableList<Articles>,context: Context, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
+    val localContext = LocalContext.current
     LazyColumn(modifier = Modifier.padding(top = 70.dp)) {
         items(items = newsList) { item ->
             Card(
                 modifier = Modifier
                     .padding(start = 15.dp, end = 15.dp)
                     .padding(top = 10.dp)
-//                .height(400.dp)
                     .shadow(5.dp, shape = RoundedCornerShape(15.dp))
+                    .clickable {
+                        localContext.startActivity(
+                            Intent(context, NewsDetail::class.java)
+                                .putExtra("image", item.urlToImage)
+                                .putExtra("title", item.title)
+                                .putExtra("desc", item.description)
+                                .putExtra("url", item.url)
+                        )
+                    }
             ) {
                 Column(
                     modifier = Modifier
-//                    .fillMaxSize()
                 ) {
                     AsyncImage(
                         model = "${item.urlToImage}", contentDescription = "", modifier = Modifier
