@@ -14,3 +14,6 @@ Mobile Application(Android) that list and open best-outlinked news articles from
 2. Use the only Kotlin programming language to develop the application
 3. Use of Web API to fetch news details(Do not use any 3rd party Library like retrofit only use System APIs).
 
+## APK file -
+[NewsApp.apk](https://drive.google.com/file/d/1hnzSkXqKGDCIxqOJaNccMnvRN4PScrEF/view?usp=sharing)
+
