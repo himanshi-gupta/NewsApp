@@ -15,6 +15,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -52,10 +53,11 @@ class NewsViewModel : ViewModel() {
         }
     }
 
-    private fun saveData(){
+    private suspend fun saveData(){
         val firestore : FirebaseFirestore = FirebaseFirestore.getInstance()
         news.forEach {
             firestore.collection("NewsArticles").document().set(mapOf("article" to it))
+            delay(3000)
         }
     }
 }
