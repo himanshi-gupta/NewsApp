@@ -80,11 +80,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     newsVM.getNews()
-                    if(intent.extras!=null){
-                        val image = intent.getStringExtra("image")
-                        val title = intent.getStringExtra("title")
-                        val descriptn = intent.getStringExtra("desc")
-                        val url = intent.getStringExtra("url")
+                    val image = intent.getStringExtra("image")
+                    val title = intent.getStringExtra("title")
+                    val descriptn = intent.getStringExtra("desc")
+                    val url = intent.getStringExtra("url")
+                    if(image!=null || title!=null || descriptn!=null || url!=null){
+                        LandingPage(newsVM.news, applicationContext,{ getToken() }) { newsVM.sortList(it) }
                         startActivity(Intent(applicationContext,NewsDetail::class.java)
                             .putExtra("image",image)
                             .putExtra("title",title)
