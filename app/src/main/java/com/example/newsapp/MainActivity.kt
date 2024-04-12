@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     val descriptn = intent.getStringExtra("desc")
                     val url = intent.getStringExtra("url")
                     if(image!=null || title!=null || descriptn!=null || url!=null){
-                        LandingPage(newsVM.news, applicationContext,{ getToken() }) { newsVM.sortList(it) }
+                        LandingPage(newsVM.news, applicationContext) { newsVM.sortList(it) }
                         startActivity(Intent(applicationContext,NewsDetail::class.java)
                             .putExtra("image",image)
                             .putExtra("title",title)
@@ -93,32 +93,20 @@ class MainActivity : ComponentActivity() {
                             .putExtra("url",url))
                     }
                     else
-                        LandingPage(newsVM.news, applicationContext,{ getToken() }) { newsVM.sortList(it) }
+                        LandingPage(newsVM.news, applicationContext) { newsVM.sortList(it) }
 
                 }
             }
         }
     }
 
-    private fun getToken() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.d("Himanshi", "Fetching FCM registration token failed ${task.exception}")
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-        })
-    }
 }
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingPage(newsList: MutableList<Articles>, context : Context, getToken : () -> Unit, sortList : (Int) -> Unit) {
+fun LandingPage(newsList: MutableList<Articles>, context : Context, sortList : (Int) -> Unit) {
 
     Scaffold(
         topBar = {
@@ -132,7 +120,6 @@ fun LandingPage(newsList: MutableList<Articles>, context : Context, getToken : (
                             text = "NewsApp",
                             fontSize = 25.sp,
                             fontWeight = FontWeight.ExtraBold,
-//                            modifier = Modifier.width(200.dp)
                         )
                         DropDownMenu(){
                             sortList(it)
@@ -150,7 +137,6 @@ fun LandingPage(newsList: MutableList<Articles>, context : Context, getToken : (
         content = { ListView(newsList,context) },
         bottomBar = {}
     )
-//    getToken();
 }
 
 @Composable
