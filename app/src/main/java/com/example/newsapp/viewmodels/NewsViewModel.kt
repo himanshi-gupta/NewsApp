@@ -56,7 +56,7 @@ class NewsViewModel : ViewModel() {
     private suspend fun saveData(){
         val firestore : FirebaseFirestore = FirebaseFirestore.getInstance()
         news.forEach {
-            firestore.collection("NewsArticles").document().set(mapOf("article" to it))
+            firestore.collection("NewsArticles").document("${it.title}").set(mapOf("article" to it))
             delay(3000)
         }
     }
